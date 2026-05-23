@@ -6,7 +6,6 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Tuple
 
-import numpy as np
 import torch
 from tqdm import tqdm
 
@@ -21,6 +20,11 @@ from long_context.teacher_reader import (
 )
 
 LONG_CONTEXT_LATENT_SLOT = "<<LONG_CONTEXT_LATENT_SLOT>>"
+
+try:
+    import numpy as np  # type: ignore
+except Exception:  # pragma: no cover - optional dependency in minimal envs
+    np = None
 
 
 def parse_args() -> argparse.Namespace:
@@ -148,7 +152,7 @@ def _unpack_latents_obj(obj: object) -> List[torch.Tensor]:
         if obj.dim() == 3:
             return [_coerce_latent_tensor(obj[i]) for i in range(obj.size(0))]
         raise ValueError(f"Unsupported tensor latent shape {tuple(obj.shape)}")
-    if isinstance(obj, np.ndarray):
+    if np is not None and isinstance(obj, np.ndarray):
         if obj.ndim == 2:
             return [_coerce_latent_tensor(obj)]
         if obj.ndim == 3:
@@ -172,6 +176,8 @@ def load_precomputed_latents(path: str, expected_n: int) -> List[torch.Tensor]:
             if p.suffix.lower() == ".pt":
                 obj = torch.load(p, map_location="cpu")
             else:
+                if np is None:
+                    raise RuntimeError("numpy is required to load .npy latent files.")
                 obj = np.load(p, allow_pickle=True)
             items = _unpack_latents_obj(obj)
             latents.extend(items)
@@ -179,6 +185,8 @@ def load_precomputed_latents(path: str, expected_n: int) -> List[torch.Tensor]:
         if in_path.suffix.lower() == ".pt":
             obj = torch.load(in_path, map_location="cpu")
         elif in_path.suffix.lower() == ".npy":
+            if np is None:
+                raise RuntimeError("numpy is required to load .npy latent files.")
             obj = np.load(in_path, allow_pickle=True)
         else:
             raise ValueError("latent_inputs_path must be .pt/.npy file or a directory")
