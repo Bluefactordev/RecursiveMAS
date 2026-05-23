@@ -225,6 +225,19 @@ python run.py --style distillation --batch_size 16 --temperature 0.6 --top_p 0.9
 python run.py --style deliberation --batch_size 16 --temperature 0.6 --top_p 0.95 --dataset math500 --seed 42 --trust_remote_code 1 --device cuda
 ```
 
+### 🧪 Experimental: Long-Context Distillation Scaffold
+
+An isolated experimental runner is provided at `run_long_context_distill.py` so existing styles remain unchanged.
+
+```bash
+python run_long_context_distill.py \
+  --learner_model_name_or_path /path/to/learner \
+  --outer_el_path /path/to/outer_el.pt \
+  --dataset synthetic \
+  --num_samples 16 \
+  --latent_inputs_path /path/to/precomputed_latents.pt
+```
+
 ## 🙏 Acknowledgements
 
 This project is built upon the excellent open-source community. We sincerely thank the developers and maintainers of the following libraries and resources:
