@@ -225,6 +225,21 @@ python run.py --style distillation --batch_size 16 --temperature 0.6 --top_p 0.9
 python run.py --style deliberation --batch_size 16 --temperature 0.6 --top_p 0.95 --dataset math500 --seed 42 --trust_remote_code 1 --device cuda
 ```
 
+### 🧪 Experimental Long-Context Distillation
+
+An isolated experimental scaffold is available in `run_long_context_distill.py`. It keeps the released RecursiveMAS styles unchanged while reusing the existing adapter and prompt-slot utilities for long-context latent insertion.
+
+```bash
+python run_long_context_distill.py \
+  --learner_model_name_or_path /path/to/learner \
+  --outer_adapter_path /path/to/outer_el.pt \
+  --long_context_latents_path /path/to/precomputed_latents.pt \
+  --run_modes long_context_distillation,question_only,text_distill \
+  --result_jsonl /tmp/long_context_results.jsonl
+```
+
+The experimental path also includes a tiny synthetic diagnostic dataset generator, exact-match style long-context metrics, optional teacher hidden-state cache extraction for local HF models, and an optional Perceiver-style compressor loader.
+
 ## 🙏 Acknowledgements
 
 This project is built upon the excellent open-source community. We sincerely thank the developers and maintainers of the following libraries and resources:
